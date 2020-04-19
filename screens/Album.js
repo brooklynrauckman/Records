@@ -5,9 +5,7 @@ import { Text, View, Dimensions, TextInTextut } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import * as styles from "./styles";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { Link } from "react-router-native";
-
-const deviceWidth = `${Dimensions.get("window").width / 2 - 20}Textx`;
+import { Link, TouchableOpacity } from "react-router-native";
 
 export default function Album() {
   // const [toggle, update] = useState(false);
@@ -19,7 +17,12 @@ export default function Album() {
 
   return (
     <ScrollView>
-      <Link to="/" underlayColor="transparent">
+      <Link
+        to="/"
+        underlayColor="transparent"
+        component={TouchableOpacity}
+        activeOpacity={0.8}
+      >
         <View style={styles.closeIconContainer}>
           <View style={styles.closeIconAlbum}>
             <Icon name="close" size={24} color="black" />
@@ -39,10 +42,10 @@ export default function Album() {
             <Text style={styles.artist}>Tom Petty & the Heartbreakers</Text>
             <View style={styles.tagContainer}>
               <View style={styles.tagButton}>
-                <Text style={styles.inputText}>Classic Rock</Text>
+                <Text style={styles.tagText}>Classic Rock</Text>
               </View>
               <View style={styles.tagButton}>
-                <Text style={styles.inputText}>70's</Text>
+                <Text style={styles.tagText}>70's</Text>
               </View>
             </View>
             <View>

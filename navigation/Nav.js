@@ -1,6 +1,6 @@
 import * as React from "react";
 import { View } from "react-native";
-import { Link } from "react-router-native";
+import { Link, TouchableOpacity } from "react-router-native";
 import HomeScreen from "../screens/HomeScreen";
 import Header from "../screens/Header";
 import TabBarIcon from "../components/TabBarIcon";
@@ -9,7 +9,12 @@ import * as styles from "../screens/styles";
 export default function Nav() {
   return (
     <View style={styles.navBar}>
-      <Link to="/" underlayColor="transparent">
+      <Link
+        to="/"
+        underlayColor="transparent"
+        component={TouchableOpacity}
+        activeOpacity={0.8}
+      >
         <View style={styles.link}>
           <TabBarIcon type="COLLECTION" style={styles.link} />
         </View>
@@ -17,13 +22,19 @@ export default function Nav() {
       <Link
         to="/search"
         underlayColor="transparent"
-        activeStyle={{ background: "red" }}
+        component={TouchableOpacity}
+        activeOpacity={0.8}
       >
         <View>
           <TabBarIcon type="SEARCH" />
         </View>
       </Link>
-      <Link to="/add" underlayColor="transparent">
+      <Link
+        to="/add"
+        underlayColor="transparent"
+        component={TouchableOpacity}
+        activeOpacity={0.8}
+      >
         <View>
           <TabBarIcon type="ADD" />
         </View>

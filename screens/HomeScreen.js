@@ -6,6 +6,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import * as styles from "./styles";
 
 const deviceWidth = `${Dimensions.get("window").width / 2 - 20}px`;
+console.log("handleSignUp");
 
 export default function HomeScreen() {
   // const [toggle, updateToggle] = useState(false);

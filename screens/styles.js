@@ -29,6 +29,20 @@ export const inputGroup = css`
   padding: 16px;
 `;
 
+export const loginGroup = css`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 240px;
+`;
+
+export const loginGroupContainer = css`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 16px;
+`;
+
 export const addPic = (deviceWidth) => css`
   width: ${deviceWidth};
   height: 135px;
@@ -37,6 +51,12 @@ export const addPic = (deviceWidth) => css`
   border-radius: 5px;
   font-size: 24px;
   color: white;
+`;
+
+export const picPreview = (deviceWidth) => css`
+  width: ${deviceWidth};
+  height: 135px;
+  border-radius: 5px;
 `;
 
 export const basicInput = css`
@@ -60,9 +80,45 @@ export const inputText = css`
   color: #999;
 `;
 
+export const tagText = css`
+  font-size: 20px;
+  color: #999;
+  text-align: center;
+`;
+
+export const addTagText = css`
+  min-width: 120px;
+  font-size: 20px;
+  color: #999;
+`;
+
+export const loginInput = css`
+  display: flex;
+  margin: 16px;
+  padding: 4px 8px;
+  border-bottom-color: #ccc;
+  border-bottom-width: 2;
+`;
+
 export const tagButton = css`
-  margin: 16px 8px 16px 0;
-  padding: 8px 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin: 8px 8px 8px 0;
+  padding: 4px 16px;
+  border: 1px solid #999;
+  border-radius: 50px;
+`;
+
+export const clearIcon = css`
+  padding-left: 16px;
+`;
+
+export const addTagButton = css`
+  min-width: 128px;
+  padding: 4px 8px;
+  margin: 8px 0;
   border: 1px solid #999;
   border-radius: 50px;
 `;
@@ -70,7 +126,14 @@ export const tagButton = css`
 export const tagContainer = css`
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: left;
+  margin: 16px 0 0 0;
+`;
+
+export const tagAdd = css`
+  display: flex;
+  flex-direction: row;
 `;
 
 export const submitButton = css`
@@ -214,7 +277,7 @@ export const closeIcon = css`
 export const plusIcon = css`
   display: flex;
   align-items: center;
-  padding: 53px;
+  padding-top: 53px;
 `;
 
 export const closeIconAlbum = css`
@@ -253,6 +316,7 @@ export const collectionTop = (width) => css`
 `;
 
 export const sort = css`
+  padding-left: 16px;
   font-weight: normal;
   font-size: 20px;
   color: black;
@@ -271,7 +335,7 @@ export const collectionIcon = css`
 `;
 
 export const myCollection = css`
-  padding-right: 8px;
+  padding-right: 16px;
   font-size: 32px;
   font-weight: bold;
 `;
