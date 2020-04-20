@@ -18,9 +18,13 @@ import {
   isLoaded,
   isEmpty,
 } from "react-redux-firebase";
-import { useSelector } from "react-redux";
+import { updateApp } from "../redux/app/actions";
+import { useSelector, useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 
 export default function Search(props) {
+  /* Hooks */
+  const history = useHistory();
   const { results, updateResults } = props;
   const [search, updateSearch] = React.useState("");
 
@@ -36,6 +40,9 @@ export default function Search(props) {
       where: ["userId", "==", auth.uid ? auth.uid : ""],
     },
   ]);
+
+  /* Our Redux */
+  const dispatch = useDispatch();
 
   const records = useSelector((state) =>
     state.firestore.ordered.records ? state.firestore.ordered.records : []
@@ -94,14 +101,18 @@ export default function Search(props) {
               !records || isEmpty(records),
               <Text>No records found</Text>,
               results.map((record) => (
-                <View
+                <TouchableOpacity
                   style={styles.smallPic(deviceWidth)}
-                  key={record.createdAt}
+                  key={record.id}
+                  onPress={() => {
+                    dispatch(updateApp({ activeAlbum: record }));
+                    history.push("/album");
+                  }}
                 >
                   {ternaryRender(
                     record.image.length,
                     <Image
-                      style={styles.smallPic(deviceWidth)}
+                      style={styles.smallPicImage(deviceWidth)}
                       source={{ url: record.image }}
                     ></Image>,
                     <View style={styles.smallPicText}>
@@ -109,7 +120,7 @@ export default function Search(props) {
                       <Text style={styles.smallPicArtist}>{record.artist}</Text>
                     </View>
                   )}
-                </View>
+                </TouchableOpacity>
               ))
             )
           )}

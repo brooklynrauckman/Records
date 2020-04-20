@@ -13,12 +13,9 @@ import {
 } from "react-redux-firebase";
 import { updateApp } from "../redux/app/actions";
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-native";
 import { useHistory } from "react-router-dom";
 
 export default function HomeScreen(props) {
-  const deviceWidth = `${Dimensions.get("window").width / 2 - 20}px`;
-
   /* Hooks */
   const history = useHistory();
 
@@ -35,10 +32,12 @@ export default function HomeScreen(props) {
 
   /* Our Redux */
   const dispatch = useDispatch();
-
   const records = useSelector((state) =>
     state.firestore.ordered.records ? state.firestore.ordered.records : []
   );
+
+  //Local constants
+  const deviceWidth = `${Dimensions.get("window").width / 2 - 20}px`;
 
   return (
     <ScrollView>
@@ -53,7 +52,7 @@ export default function HomeScreen(props) {
               records.map((record) => (
                 <TouchableOpacity
                   style={styles.smallPic(deviceWidth)}
-                  key={record.createdAt}
+                  key={record.id}
                   onPress={() => {
                     dispatch(updateApp({ activeAlbum: record }));
                     history.push("/album");

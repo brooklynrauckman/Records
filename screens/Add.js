@@ -22,6 +22,7 @@ import {
 import Images from "./Images.js";
 import firebase from "firebase";
 import { ternaryRender } from "../lib";
+import { uuidv4 } from "uuid4";
 
 export default function Add() {
   /* Hooks */
@@ -68,19 +69,30 @@ export default function Add() {
     });
   };
 
+  // Generate a new UUID
+  const id = uuid4();
+
+  // Validate a UUID as proper V4 format
+  // uuid4.valid(id);
+
   const updateFirebaseDoc = async (imageUrl) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
-        const record = firestore.add("records", {
-          image: imageUrl && imageUrl.length ? imageUrl : "",
-          album: album,
-          artist: artist,
-          tags: tags,
-          notes: notes,
-          timesPlayed: 0,
-          createdAt: firestore.FieldValue.serverTimestamp(),
-          userId: auth.uid,
-        });
+        firestore
+          .add("records", {
+            image: imageUrl && imageUrl.length ? imageUrl : "",
+            album: album,
+            artist: artist,
+            tags: tags,
+            notes: notes,
+            timesPlayed: 0,
+            createdAt: firestore.FieldValue.serverTimestamp(),
+            id: id,
+            userId: auth.uid,
+          })
+          .then((res) => {
+            console.log(res.id);
+          });
         resolve(true);
       } catch (error) {
         reject(false);
