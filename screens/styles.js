@@ -128,15 +128,19 @@ export const tagContainer = css`
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: left;
-  margin: 16px 0 0 0;
-`;
-
-export const tagAdd = css`
-  display: flex;
-  flex-direction: row;
+  margin: 16px 0;
 `;
 
 export const submitButton = css`
+  margin: 16px 0 230px 0;
+  padding: 16px 32px;
+  width: 100%;
+  background-color: #c81111;
+  border: none;
+  border-radius: 50px;
+`;
+
+export const loginButton = css`
   margin: 16px 0;
   padding: 16px 32px;
   width: 100%;
@@ -161,7 +165,6 @@ export const albumPic = (deviceWidth) => css`
   height: 373px;
   margin-bottom: 32px;
   background-color: #eee;
-  border: none;
   border-radius: 5px;
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.15);
 `;
@@ -297,6 +300,38 @@ export const smallPic = (deviceWidth) => css`
   border: none;
   border-radius: 5px;
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.15);
+`;
+
+export const smallPicImage = (deviceWidth) => css`
+  width: ${deviceWidth};
+  height: 160px;
+  margin-bottom: 8px;
+  background-color: lightgray;
+  border-radius: 5px;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.15);
+`;
+
+export const smallPicText = css`
+  display: flex;
+  justify-content: center;
+  height: 160px;
+  margin-bottom: 8px;
+  background-color: lightgray;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.15);
+`;
+
+export const smallPicAlbum = css`
+  margin: 0 8px;
+  font-size: 20px;
+  font-weight: bold;
+`;
+export const smallPicArtist = css`
+  margin: 0 8px;
+  font-size: 16px;
+  color: #999;
+  font-weight: normal;
 `;
 
 export const albumResults = css`

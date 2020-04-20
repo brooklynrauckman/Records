@@ -1,7 +1,7 @@
-import { UPDATE_APP } from './types';
-import { initialState } from './initialState';
+import { UPDATE_APP } from "./types";
+import { initialState } from "./initialState";
 
-const app = (state = initialState, action) => {
+const recordsReducer = (state = initialState, action) => {
   switch (action.type) {
     case UPDATE_APP: {
       return { ...state, ...action.payload };
@@ -12,4 +12,4 @@ const app = (state = initialState, action) => {
   }
 };
 
-export default app;
+export default recordsReducer;

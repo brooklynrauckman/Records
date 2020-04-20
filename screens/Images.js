@@ -114,7 +114,7 @@ export default class Images extends Component {
         aspect: [4, 3],
       });
 
-      this._handleImagePicked(pickerResult);
+      this.props.updatePic(pickerResult);
     }
   };
 

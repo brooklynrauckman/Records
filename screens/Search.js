@@ -1,16 +1,65 @@
-import * as WebBrowser from "expo-web-browser";
 import * as React from "react";
-// import { useState } from "react";
-import { Text, View, Dimensions, TextInput } from "react-native";
+import {
+  Text,
+  View,
+  Dimensions,
+  TextInput,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import * as styles from "./styles";
+import { ternaryRender } from "../lib";
+import {
+  useFirestoreConnect,
+  useFirestore,
+  useFirebase,
+  isLoaded,
+  isEmpty,
+} from "react-redux-firebase";
+import { useSelector } from "react-redux";
 
-const deviceWidth = `${Dimensions.get("window").width / 2 - 20}px`;
+export default function Search(props) {
+  const { results, updateResults } = props;
+  const [search, updateSearch] = React.useState("");
 
-export default function Search() {
-  // const [toggle, updateToggle] = useState(false);
-  const [value, onChangeText] = React.useState("Neil Young");
+  const deviceWidth = `${Dimensions.get("window").width / 2 - 20}px`;
+
+  /* Firebase Redux */
+  const firestore = useFirestore();
+  const auth = useSelector((state) => state.firebase.auth);
+
+  useFirestoreConnect([
+    {
+      collection: "records",
+      where: ["userId", "==", auth.uid ? auth.uid : ""],
+    },
+  ]);
+
+  const records = useSelector((state) =>
+    state.firestore.ordered.records ? state.firestore.ordered.records : []
+  );
+
+  React.useEffect(() => {
+    if (records.length) {
+      updateResults(records);
+    }
+  }, [records]);
+
+  React.useEffect(() => {
+    const filtered = records.filter(
+      (record) =>
+        record.album.toLowerCase().includes(search.toLowerCase()) ||
+        record.artist.toLowerCase().includes(search.toLowerCase()) ||
+        !!record.tags.filter((i) =>
+          i.toLowerCase().includes(search.toLowerCase())
+        ).length
+    );
+    if (records.length && search.length) {
+      updateResults(filtered);
+    }
+  }, [search]);
 
   return (
     <ScrollView>
@@ -18,18 +67,52 @@ export default function Search() {
         <View style={styles.searchSection}>
           <TextInput
             style={styles.searchBar}
-            onChangeText={(text) => onChangeText(text)}
-            value={value}
+            onChangeText={(text) => updateSearch(text)}
+            value={search}
+            placeholder="i.e. Album, Artist, Genre"
+            placeholderTextColor="#999"
             clearTextOnFocus={true}
+            onSubmitEditing={() => {
+              updateSearch(search);
+            }}
           />
-          <View style={styles.closeIcon}>
+          <TouchableOpacity
+            style={styles.closeIcon}
+            onPress={() => {
+              updateSearch("");
+              updateResults(records);
+            }}
+          >
             <Icon name="close" size={24} color="#999" />
-          </View>
+          </TouchableOpacity>
         </View>
         <View style={styles.albumResults}>
-          <View style={styles.smallPic(deviceWidth)}></View>
-          <View style={styles.smallPic(deviceWidth)}></View>
-          <View style={styles.smallPic(deviceWidth)}></View>
+          {ternaryRender(
+            !isLoaded(records) || isEmpty(records) || isEmpty(auth),
+            <Text>Loading...</Text>,
+            ternaryRender(
+              !records || isEmpty(records),
+              <Text>No records found</Text>,
+              results.map((record) => (
+                <View
+                  style={styles.smallPic(deviceWidth)}
+                  key={record.createdAt}
+                >
+                  {ternaryRender(
+                    record.image.length,
+                    <Image
+                      style={styles.smallPic(deviceWidth)}
+                      source={{ url: record.image }}
+                    ></Image>,
+                    <View style={styles.smallPicText}>
+                      <Text style={styles.smallPicAlbum}>{record.album}</Text>
+                      <Text style={styles.smallPicArtist}>{record.artist}</Text>
+                    </View>
+                  )}
+                </View>
+              ))
+            )
+          )}
         </View>
       </View>
     </ScrollView>

@@ -43,15 +43,15 @@ function AuthIsLoaded({ children }) {
   ) {
     history.push("/login");
   }
-  // else if (auth.uid && history.location.pathname !== "/") {
-  //   history.push("/");
-  // }
 
   return children;
 }
 
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = React.useState(false);
+
+  //Hooks to pass down
+  const [results, updateResults] = React.useState([]);
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
@@ -97,8 +97,8 @@ export default function App(props) {
                   <Nav />
                 </Route>
                 <Route exact path="/search">
-                  <HeaderTwo />
-                  <Search />
+                  <HeaderTwo results={results} />
+                  <Search results={results} updateResults={updateResults} />
                   <Nav />
                 </Route>
                 <Route exact path="/add">

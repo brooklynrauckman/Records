@@ -5,6 +5,7 @@ import {
   View,
   SafeAreaView,
   TouchableOpacity,
+  KeyboardAvoidingView,
 } from "react-native";
 import { NativeRouter, Route, Link } from "react-router-native";
 import { useSelector } from "react-redux";
@@ -45,7 +46,11 @@ export default function Login() {
   }, [auth]);
 
   return (
-    <SafeAreaView>
+    <KeyboardAvoidingView
+      keyboardVerticalOffset={130}
+      style={{ flex: 1 }}
+      behavior="padding"
+    >
       <View style={styles.loginGroupContainer}>
         {ternaryRender(
           !isLoaded(auth),
@@ -70,12 +75,13 @@ export default function Login() {
                   placeholder="password"
                   onChangeText={(text) => updatePassword(text)}
                   value={password}
+                  secureTextEntry={true}
                   textContentType="password"
                   autoCapitalize="none"
                 />
               </View>
               <TouchableOpacity
-                style={styles.submitButton}
+                style={styles.loginButton}
                 onPress={() => {
                   signIn();
                 }}
@@ -83,7 +89,7 @@ export default function Login() {
                 <Text style={styles.submitText}>Log In</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.submitButton}
+                style={styles.loginButton}
                 onPress={() => {
                   signUp();
                 }}
@@ -95,6 +101,6 @@ export default function Login() {
           )
         )}
       </View>
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }

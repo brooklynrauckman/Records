@@ -1,4 +1,3 @@
-import * as WebBrowser from "expo-web-browser";
 import * as React from "react";
 import {
   Text,
@@ -8,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  KeyboardAvoidingView,
 } from "react-native";
 import { Link } from "react-router-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -77,6 +77,7 @@ export default function Add() {
           artist: artist,
           tags: tags,
           notes: notes,
+          timesPlayed: 0,
           createdAt: firestore.FieldValue.serverTimestamp(),
           userId: auth.uid,
         });
@@ -152,24 +153,24 @@ export default function Add() {
               </View>
             </View>
           </View>
+
           <View style={styles.tagContainer}>
-            <View style={styles.tagContainer}>
-              {tags.map((tag, index) => (
-                <View style={styles.tagButton} key={`${tag}-${index}`}>
-                  <Text style={styles.tagText}>{tag}</Text>
-                  <TouchableOpacity style={styles.clearIcon}>
-                    <Icon
-                      name="close-circle"
-                      size={16}
-                      color="#ccc"
-                      onPress={() => {
-                        updateTags(tags.filter((item) => item !== tag));
-                      }}
-                    />
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </View>
+            {tags.map((tag, index) => (
+              <View style={styles.tagButton} key={`${tag}-${index}`}>
+                <Text style={styles.tagText}>{tag}</Text>
+                <TouchableOpacity style={styles.clearIcon}>
+                  <Icon
+                    name="close-circle"
+                    size={16}
+                    color="#ccc"
+                    onPress={() => {
+                      updateTags(tags.filter((item) => item !== tag));
+                    }}
+                  />
+                </TouchableOpacity>
+              </View>
+            ))}
+
             <View style={styles.addTagButton}>
               <TextInput
                 style={styles.addTagText}

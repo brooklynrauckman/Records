@@ -1,4 +1,3 @@
-import * as WebBrowser from "expo-web-browser";
 import * as React from "react";
 import { Text, View, Dimensions } from "react-native";
 import * as styles from "./styles";
