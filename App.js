@@ -52,6 +52,11 @@ export default function App(props) {
 
   //Hooks to pass down
   const [results, updateResults] = React.useState([]);
+  const [isActive, setIsActive] = React.useState(true);
+  const [isActiveTwo, setIsActiveTwo] = React.useState(false);
+  const [isActiveThree, setIsActiveThree] = React.useState(false);
+  const [dropdown, updateDropdown] = React.useState(false);
+  const [sortSelect, updateSortSelect] = React.useState("");
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
@@ -92,21 +97,53 @@ export default function App(props) {
               </Route>
               <AuthIsLoaded>
                 <Route exact path="/">
-                  <Header />
-                  <HomeScreen />
-                  <Nav />
+                  <Header
+                    dropdown={dropdown}
+                    updateDropdown={updateDropdown}
+                    updateSortSelect={updateSortSelect}
+                  />
+                  <HomeScreen
+                    dropdown={dropdown}
+                    updateDropdown={updateDropdown}
+                    sortSelect={sortSelect}
+                    updateSortSelect={updateSortSelect}
+                  />
+                  <Nav
+                    isActive={isActive}
+                    setIsActive={setIsActive}
+                    isActiveTwo={isActiveTwo}
+                    setIsActiveTwo={setIsActiveTwo}
+                    isActiveThree={isActiveThree}
+                    setIsActiveThree={setIsActiveThree}
+                  />
                 </Route>
                 <Route exact path="/search">
                   <HeaderTwo results={results} />
                   <Search results={results} updateResults={updateResults} />
-                  <Nav />
+                  <Nav
+                    isActive={isActive}
+                    setIsActive={setIsActive}
+                    isActiveTwo={isActiveTwo}
+                    setIsActiveTwo={setIsActiveTwo}
+                    isActiveThree={isActiveThree}
+                    setIsActiveThree={setIsActiveThree}
+                  />
                 </Route>
                 <Route exact path="/add">
                   <HeaderThree />
                   <Add />
-                  <Nav />
+                  <Nav
+                    isActive={isActive}
+                    setIsActive={setIsActive}
+                    isActiveTwo={isActiveTwo}
+                    setIsActiveTwo={setIsActiveTwo}
+                    isActiveThree={isActiveThree}
+                    setIsActiveThree={setIsActiveThree}
+                  />
                 </Route>
-                <Route exact path="/album" component={Album} />
+                <Route exact path="/album">
+                  <Album isActiveTwo={isActiveTwo} />
+                </Route>
                 <Route exact path="/images" component={Images} />
               </AuthIsLoaded>
             </View>

@@ -26,6 +26,8 @@ export default function Search(props) {
   /* Hooks */
   const history = useHistory();
   const { results, updateResults } = props;
+
+  //hooks
   const [search, updateSearch] = React.useState("");
 
   const deviceWidth = `${Dimensions.get("window").width / 2 - 20}px`;

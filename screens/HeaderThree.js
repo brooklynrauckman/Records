@@ -8,7 +8,9 @@ export default function HeaderThree() {
   return (
     <View style={styles.collectionTop(deviceWidth)}>
       <View style={styles.row}>
-        <Text style={styles.myCollection}>Add an Album</Text>
+        <View style={styles.headingPadding}>
+          <Text style={styles.myCollection}>Add an Album</Text>
+        </View>
       </View>
     </View>
   );

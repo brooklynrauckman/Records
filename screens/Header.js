@@ -9,7 +9,10 @@ import {
 } from "react-redux-firebase";
 import { useSelector } from "react-redux";
 
-export default function Header() {
+export default function Header(props) {
+  //props
+  const { dropdown, updateDropdown, updateSortSelect } = props;
+
   /* Firebase Redux */
   const firebase = useFirebase();
   const firestore = useFirestore();
@@ -35,19 +38,27 @@ export default function Header() {
         <View style={styles.buttonContainer}>
           <Text style={styles.countButton}>{records.length}</Text>
         </View>
-        <Text style={styles.sort}>Sort</Text>
       </View>
       <View>
         <TouchableOpacity
           onPress={() => {
-            firebase.logout();
+            updateDropdown(!dropdown);
+            updateSortSelect("");
           }}
-          component={TouchableOpacity}
-          activeOpacity={0.8}
         >
-          <Icon name="logout" size={24} color="black" />
+          <Text style={styles.sort}>Sort</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
+
+// <TouchableOpacity
+//   onPress={() => {
+//     firebase.logout();
+//   }}
+//   component={TouchableOpacity}
+//   activeOpacity={0.8}
+// >
+//   <Icon name="logout" size={24} color="black" />
+// </TouchableOpacity>

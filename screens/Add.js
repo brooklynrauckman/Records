@@ -33,7 +33,6 @@ export default function Add() {
   const [notes, updateNotes] = React.useState("");
   const [toggleCamera, updateToggleCamera] = React.useState(false);
   const [pic, updatePic] = React.useState({});
-  // const [alert, toggleAlert] = React.useState(false);
 
   /* Firebase Redux */
   const firestore = useFirestore();
@@ -41,7 +40,6 @@ export default function Add() {
   useFirestoreConnect([
     { collection: "records", where: ["userId", "==", auth.uid] },
   ]);
-  const records = useSelector((state) => state.firestore.ordered.records);
 
   /* Local Constants */
   const deviceWidth = `${Dimensions.get("window").width / 3}px`;
@@ -127,10 +125,15 @@ export default function Add() {
           <View style={styles.newAlbumInfo}>
             {ternaryRender(
               pic.uri,
-              <Image
-                style={styles.picPreview(deviceWidth)}
-                source={{ uri: pic.uri }}
-              ></Image>,
+              <TouchableOpacity
+                style={styles.smallPic}
+                onPress={() => updateToggleCamera(!toggleCamera)}
+              >
+                <Image
+                  style={styles.picPreview(deviceWidth)}
+                  source={{ uri: pic.uri }}
+                ></Image>
+              </TouchableOpacity>,
               <View style={styles.addPic(deviceWidth)}>
                 <TouchableOpacity
                   style={styles.plusIcon}

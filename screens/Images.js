@@ -34,16 +34,20 @@ export default class Images extends Component {
       <View style={styles.container}>
         <StatusBar barStyle="default" />
 
-        <Text style={styles.exampleText}>
-          Example: Upload ImagePicker result
-        </Text>
-
-        <Button
+        <TouchableOpacity
           onPress={this._pickImage}
-          title="Pick an image from camera roll"
-        />
-
-        <Button onPress={this._takePhoto} title="Take a photo" />
+          style={styles.imagePickerTextContainer}
+        >
+          <Text style={styles.imagePickerText}>
+            Pick an image from camera roll
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={this._takePhoto}
+          style={styles.imagePickerTextContainer}
+        >
+          <Text style={styles.imagePickerText}>Take a photo</Text>
+        </TouchableOpacity>
 
         {this._maybeRenderImage()}
         {this._maybeRenderUploadingOverlay()}
@@ -132,64 +136,6 @@ export default class Images extends Component {
       this.props.updatePic(pickerResult);
     }
   };
-
-  //   _handleImagePicked = async (pickerResult) => {
-  //     let uploadResponse, uploadResult;
-  //
-  //     try {
-  //       this.setState({
-  //         uploading: true,
-  //       });
-  //
-  //       if (!pickerResult.cancelled) {
-  //         console.log(pickerResult);
-  //         // uploadResponse = await addTestFile(pickerResult.uri);
-  //         // uploadResult = await uploadResponse.json();
-  //         //
-  //         // this.setState({
-  //         //   image: uploadResult.location,
-  //         // });
-  //         // console.log(uploadResult.location);
-  //       }
-  //     } catch (e) {
-  //       console.log({ uploadResponse });
-  //       console.log({ uploadResult });
-  //       console.log({ e });
-  //       alert("Upload failed, sorry :(");
-  //     } finally {
-  //       this.setState({
-  //         uploading: false,
-  //       });
-  //     }
-  //   };
-  // }
-
-  // async function uploadImageAsync(uri) {
-  // // TODO: change to firebase OR just don't event upload at all
-  // // let apiUrl = "https://file-upload-example-backend-dkhqoilqqn.now.sh/upload";
-  //
-  // }
-  //
-  //   let uriParts = uri.split(".");
-  //   let fileType = uriParts[uriParts.length - 1];
-  //
-  //   let formData = new FormData();
-  //   formData.append("photo", {
-  //     uri,
-  //     name: `photo.${fileType}`,
-  //     type: `image/${fileType}`,
-  //   });
-  //
-  //   let options = {
-  //     method: "POST",
-  //     body: formData,
-  //     headers: {
-  //       Accept: "application/json",
-  //       "Content-Type": "multipart/form-data",
-  //     },
-  //   };
-  //
-  //   return fetch(apiUrl, options);
 }
 
 const styles = StyleSheet.create({
@@ -197,11 +143,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flex: 1,
     justifyContent: "center",
+    flexDirection: "column",
+    margin: 16,
   },
-  exampleText: {
+  imagePickerTextContainer: {
+    marginTop: 16,
+    paddingTop: 16,
+    paddingBottom: 16,
+    paddingRight: 32,
+    paddingLeft: 32,
+    backgroundColor: "#c81111",
+    borderRadius: 50,
+  },
+  imagePickerText: {
+    color: "white",
     fontSize: 20,
-    marginBottom: 20,
-    marginHorizontal: 15,
     textAlign: "center",
   },
   maybeRenderUploading: {

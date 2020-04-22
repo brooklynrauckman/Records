@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  Alert,
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import * as styles from "./styles";
@@ -22,10 +23,13 @@ import { useHistory } from "react-router-dom";
 import { updateApp } from "../redux/app/actions";
 import "firebase/firestore";
 import * as firebase from "firebase/app";
-
 import { useCollection } from "react-firebase-hooks/firestore";
+import { ternaryRender } from "../lib";
 
-export default function Album() {
+export default function Album(props) {
+  //props
+  const { isActiveTwo } = props;
+
   /* Our Redux */
   const dispatch = useDispatch();
   const { activeAlbum } = useSelector((state) => ({
@@ -67,7 +71,70 @@ export default function Album() {
 
   //Update lastPlayed on click
   async function updateRecordTwo() {
-    const today = new Date();
+    const date = new Date();
+    const lastPlayed = date.toISOString();
+
+    v.docs[0].ref.update({
+      lastPlayed: lastPlayed,
+    });
+    updatePlayDate(lastPlayed);
+  }
+
+  //Delete album on click
+  async function deleteRecord() {
+    Alert.alert(
+      "Delete Record",
+      "Are you sure you want to delete this record?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Delete Canceled"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: () => {
+            v.docs[0].ref.delete();
+            dispatch(updateApp({ activeAlbum: {} }));
+            history.push(isActiveTwo === true ? "/search" : "/");
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  }
+
+  //Watch for activeAlbum to sync timesPlayed and lastPlayed values
+  React.useEffect(() => {
+    if (activeAlbum) {
+      updatePlays(activeAlbum.timesPlayed);
+      const date = new Date(activeAlbum.lastPlayed);
+      const day = date.getDate();
+      const months = new Array();
+      months[0] = "January";
+      months[1] = "February";
+      months[2] = "March";
+      months[3] = "April";
+      months[4] = "May";
+      months[5] = "June";
+      months[6] = "July";
+      months[7] = "August";
+      months[8] = "September";
+      months[9] = "October";
+      months[10] = "November";
+      months[11] = "December";
+      const month = months[date.getMonth()];
+      const year = date.getFullYear();
+      const dateConverted = month + " " + day + ", " + year;
+      if (activeAlbum.lastPlayed) {
+        updatePlayDate(dateConverted);
+      }
+    }
+  }, [activeAlbum]);
+
+  const convertDate = () => {
+    const date = new Date();
+    const day = date.getDate();
     const months = new Array();
     months[0] = "January";
     months[1] = "February";
@@ -81,35 +148,12 @@ export default function Album() {
     months[9] = "October";
     months[10] = "November";
     months[11] = "December";
-    const year = today.getFullYear();
-    const month = months[today.getMonth()];
-    const day = today.getDate();
-    const seconds = today.getSeconds();
-    const lastPlayed = month + " " + day + ", " + year;
-    v.docs[0].ref.update({
-      lastPlayed: lastPlayed,
-    });
-    updatePlayDate(lastPlayed);
-  }
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    const dateConverted = month + " " + day + ", " + year;
 
-  //Watch for activeAlbum to sync timesPlayed and lastPlayed values
-  React.useEffect(() => {
-    if (activeAlbum) {
-      updatePlays(activeAlbum.timesPlayed);
-      updatePlayDate(activeAlbum.lastPlayed);
-    }
-  }, [activeAlbum]);
-
-  useFirestoreConnect([
-    {
-      collection: "records",
-      where: ["userId", "==", auth.uid ? auth.uid : ""],
-    },
-  ]);
-
-  const records = useSelector((state) =>
-    state.firestore.ordered.records ? state.firestore.ordered.records : []
-  );
+    updatePlayDate(dateConverted);
+  };
 
   const deviceWidth = `${Dimensions.get("window").width - 32}px`;
 
@@ -119,7 +163,7 @@ export default function Album() {
         style={styles.closeIconContainer}
         onPress={() => {
           dispatch(updateApp({ activeAlbum: {} }));
-          history.push("/");
+          history.push(isActiveTwo === true ? "/search" : "/");
         }}
       >
         <View style={styles.closeIconAlbum}>
@@ -140,6 +184,7 @@ export default function Album() {
               onPress={() => {
                 updateRecord();
                 updateRecordTwo();
+                convertDate();
               }}
             >
               <Text style={styles.countButton}>{`x${plays}`}</Text>
@@ -148,18 +193,36 @@ export default function Album() {
           <View style={styles.albumInfo}>
             <Text style={styles.artist}>{activeAlbum.artist}</Text>
             <View style={styles.tagContainer}>
-              {activeAlbum.tags.map((tag) => (
-                <View style={styles.tagButton}>
-                  <Text style={styles.tagText}>{tag}</Text>
-                </View>
-              ))}
+              {ternaryRender(
+                activeAlbum,
+                activeAlbum.tags.map((tag) => (
+                  <View style={styles.tagButton}>
+                    <Text style={styles.tagText}>{tag}</Text>
+                  </View>
+                )),
+                null
+              )}
             </View>
             <View>
-              <Text style={styles.lastPlayed}>
-                Last played &nbsp; <Text style={styles.date}>{playDate}</Text>
-              </Text>
+              {ternaryRender(
+                playDate,
+                <Text style={styles.lastPlayed}>
+                  Last played &nbsp; <Text style={styles.date}>{playDate}</Text>
+                </Text>,
+                <Text></Text>
+              )}
               <Text style={styles.notes}>Notes</Text>
               <Text style={styles.note}>{activeAlbum.notes}</Text>
+            </View>
+            <View style={styles.buttonRight}>
+              <TouchableOpacity
+                style={styles.deleteContainer}
+                onPress={() => {
+                  deleteRecord();
+                }}
+              >
+                <Text style={styles.deleteButton}>Delete</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>

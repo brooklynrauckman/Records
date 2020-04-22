@@ -1,11 +1,5 @@
 import { css } from "@emotion/native";
 
-// export const record = (isActive) => css`
-//   display: block;
-//   margin: 16px 0;
-//   color: ${isActive ? "green" : "red"};
-// `;
-
 export const page = css`
   display: flex;
   flex-direction: column;
@@ -203,6 +197,11 @@ export const countButton = css`
   font-weight: bold;
 `;
 
+export const deleteButton = css`
+  color: white;
+  font-size: 20px;
+`;
+
 export const buttonContainer = css`
   min-height: 24px;
   margin: 16px 0;
@@ -211,6 +210,21 @@ export const buttonContainer = css`
   border: none;
   border-radius: 20px;
   box-shadow: 1px 1px 1px #eee;
+`;
+
+export const deleteContainer = css`
+  min-height: 24px;
+  margin: 16px 0;
+  padding: 4px 8px;
+  background-color: #c81111;
+  border: none;
+  border-radius: 20px;
+`;
+
+export const buttonRight = css`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
 `;
 
 export const buttonContainerTop = css`
@@ -335,7 +349,7 @@ export const smallPicArtist = css`
 `;
 
 export const albumResults = css`
-  flex: 1;
+  display: flex;
   flex-direction: row;
   justify-content: space-between;
   flex-wrap: wrap;
@@ -373,4 +387,34 @@ export const myCollection = css`
   padding-right: 16px;
   font-size: 32px;
   font-weight: bold;
+`;
+
+export const dropdownContainer = (deviceWidthTwo) => css`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 16px;
+  width: ${deviceWidthTwo};
+`;
+
+export const dropdown = css`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+`;
+
+export const dropdownText = css`
+  font-size: 16px;
+  padding: 8px;
+`;
+
+export const dropdownTextContainer = css`
+  border-bottom-color: #ccc;
+  border-bottom-width: 2;
+`;
+
+export const headingPadding = css`
+  margin: 8px 0;
+  /* padding: 4px 8px; */
 `;
