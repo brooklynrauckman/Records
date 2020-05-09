@@ -1,4 +1,4 @@
-import { UPDATE_APP } from "./types";
+import { UPDATE_APP, ADD_RECORD } from "./types";
 import { initialState } from "./initialState";
 
 const recordsReducer = (state = initialState, action) => {
@@ -6,6 +6,13 @@ const recordsReducer = (state = initialState, action) => {
     case UPDATE_APP: {
       return { ...state, ...action.payload };
     }
+    case ADD_RECORD: {
+      return {
+        ...state,
+        ...{ records: [...state.records, ...[action.payload]] },
+      };
+    }
+
     default: {
       return state;
     }

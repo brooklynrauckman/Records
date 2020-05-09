@@ -13,28 +13,19 @@ import { ScrollView } from "react-native-gesture-handler";
 import * as styles from "./styles";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Link } from "react-router-native";
-import {
-  useFirestoreConnect,
-  useFirestore,
-  useFirebase,
-} from "react-redux-firebase";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { updateApp } from "../redux/app/actions";
-import "firebase/firestore";
-import * as firebase from "firebase/app";
-import { useCollection } from "react-firebase-hooks/firestore";
 import { ternaryRender } from "../lib";
 
 export default function Album(props) {
   //props
   const { isActiveTwo } = props;
 
-  /* Our Redux */
+  /* Redux */
   const dispatch = useDispatch();
-  const { activeAlbum } = useSelector((state) => ({
-    activeAlbum: state.recordsReducer.activeAlbum,
-  }));
+  const records = useSelector((state) => state);
+  const activeAlbum = records.openRecord;
 
   //Hooks
   const [value, onChangeText] = React.useState("Album");
@@ -48,61 +39,49 @@ export default function Album(props) {
   );
   const history = useHistory();
 
-  /* Firebase Redux */
-  const firestore = useFirestore();
-  const auth = useSelector((state) => state.firebase.auth);
-
-  //Firebase Hook to access user docs
-  const [v] = useCollection(
-    firebase
-      .firestore()
-      .collection("records")
-      .where("id", "==", activeAlbum.id ? activeAlbum.id : "")
-  );
-
   //Update timesPlayed on click
-  async function updateRecord() {
-    const timesPlayed = plays + 1;
-    v.docs[0].ref.update({
-      timesPlayed: timesPlayed,
-    });
-    updatePlays(timesPlayed);
-  }
+  // async function updateRecord() {
+  //   const timesPlayed = plays + 1;
+  //   v.docs[0].ref.update({
+  //     timesPlayed: timesPlayed,
+  //   });
+  //   updatePlays(timesPlayed);
+  // }
 
   //Update lastPlayed on click
-  async function updateRecordTwo() {
-    const date = new Date();
-    const lastPlayed = date.toISOString();
-
-    v.docs[0].ref.update({
-      lastPlayed: lastPlayed,
-    });
-    updatePlayDate(lastPlayed);
-  }
+  // async function updateRecordTwo() {
+  //   const date = new Date();
+  //   const lastPlayed = date.toISOString();
+  //
+  //   v.docs[0].ref.update({
+  //     lastPlayed: lastPlayed,
+  //   });
+  //   updatePlayDate(lastPlayed);
+  // }
 
   //Delete album on click
-  async function deleteRecord() {
-    Alert.alert(
-      "Delete Record",
-      "Are you sure you want to delete this record?",
-      [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Delete Canceled"),
-          style: "cancel",
-        },
-        {
-          text: "OK",
-          onPress: () => {
-            v.docs[0].ref.delete();
-            dispatch(updateApp({ activeAlbum: {} }));
-            history.push(isActiveTwo === true ? "/search" : "/");
-          },
-        },
-      ],
-      { cancelable: false }
-    );
-  }
+  // async function deleteRecord() {
+  //   Alert.alert(
+  //     "Delete Record",
+  //     "Are you sure you want to delete this record?",
+  //     [
+  //       {
+  //         text: "Cancel",
+  //         onPress: () => console.log("Delete Canceled"),
+  //         style: "cancel",
+  //       },
+  //       {
+  //         text: "OK",
+  //         onPress: () => {
+  //           v.docs[0].ref.delete();
+  //           dispatch(updateApp({ activeAlbum: {} }));
+  //           history.push(isActiveTwo === true ? "/search" : "/");
+  //         },
+  //       },
+  //     ],
+  //     { cancelable: false }
+  //   );
+  // }
 
   //Watch for activeAlbum to sync timesPlayed and lastPlayed values
   React.useEffect(() => {
@@ -162,7 +141,7 @@ export default function Album(props) {
       <TouchableOpacity
         style={styles.closeIconContainer}
         onPress={() => {
-          dispatch(updateApp({ activeAlbum: {} }));
+          dispatch(updateApp({ openRecord: {} }));
           history.push(isActiveTwo === true ? "/search" : "/");
         }}
       >
@@ -171,24 +150,26 @@ export default function Album(props) {
         </View>
       </TouchableOpacity>
       <View style={styles.page}>
-        <View style={styles.albumInfo} key={activeAlbum.id}>
-          <Image
-            style={styles.albumPic(deviceWidth)}
-            source={{ url: activeAlbum.image }}
-          />
-
+        <Image
+          style={styles.albumPic(deviceWidth)}
+          source={{ url: activeAlbum.image }}
+        />
+        <View style={styles.row}>
+          <Text style={styles.headingTwo}>{activeAlbum.album}</Text>
+          <TouchableOpacity
+            style={styles.buttonContainerTop}
+            onPress={() => {
+              updateRecord();
+              updateRecordTwo();
+              convertDate();
+            }}
+          >
+            <Text style={styles.countButton}>{`x${plays}`}</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.albumInfo}>
           <View style={styles.row}>
-            <Text style={styles.headingTwo}>{activeAlbum.album}</Text>
-            <TouchableOpacity
-              style={styles.buttonContainerTop}
-              onPress={() => {
-                updateRecord();
-                updateRecordTwo();
-                convertDate();
-              }}
-            >
-              <Text style={styles.countButton}>{`x${plays}`}</Text>
-            </TouchableOpacity>
+            <Text style={styles.headingTwo}>{activeAlbum.title}</Text>
           </View>
           <View style={styles.albumInfo}>
             <Text style={styles.artist}>{activeAlbum.artist}</Text>

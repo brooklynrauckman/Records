@@ -1,3 +1,4 @@
 export const initialState = {
-  activeAlbum: {},
+  records: [],
+  openRecord: {},
 };
