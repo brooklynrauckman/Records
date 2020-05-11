@@ -11,7 +11,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import * as styles from "./styles";
 import { ternaryRender } from "../lib";
-import { updateApp } from "../redux/app/actions";
+import { updateRecord } from "../redux/app/actions";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 
@@ -75,9 +75,15 @@ export default function Search(props) {
         <View style={styles.albumResults}>
           {results.map((record) => (
             <TouchableOpacity
+              key={record.id}
               style={styles.smallPic(deviceWidth)}
               onPress={() => {
-                dispatch(updateApp({ openRecord: record }));
+                dispatch(
+                  updateRecord({
+                    ...record,
+                    ...{ isOpen: true },
+                  })
+                );
                 history.push("/album");
               }}
             >

@@ -163,6 +163,15 @@ export const albumPic = (deviceWidth) => css`
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.15);
 `;
 
+export const missingPic = (deviceWidth) => css`
+  width: ${deviceWidth};
+  height: 373px;
+  margin-bottom: 32px;
+  background-color: #eee;
+  border-radius: 5px;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.15);
+`;
+
 export const row = css`
   display: flex;
   flex: 1;

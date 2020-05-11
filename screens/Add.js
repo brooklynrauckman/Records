@@ -17,6 +17,7 @@ import Images from "./Images.js";
 import { ternaryRender } from "../lib";
 import { addRecord } from "../redux/app/actions";
 import { useSelector, useDispatch } from "react-redux";
+import { uuidv4 } from "uuid4";
 
 export default function Add() {
   /* Hooks */
@@ -32,18 +33,8 @@ export default function Add() {
   const deviceWidth = `${Dimensions.get("window").width / 3}px`;
   const dispatch = useDispatch();
 
-  // const addNewRecord = async () => {
-  //   const imageUrl = pic.uri ? await uploadImageToFirebase(pic.uri) : "";
-  //   const saveSuccessful = await updateFirebaseDoc(imageUrl);
-  //   if (saveSuccessful) {
-  //     Alert.alert("New record has been successfully added to your collection!");
-  //     updateTags([]);
-  //     updatePic({});
-  //     updateAlbum("");
-  //     updateArtist("");
-  //     updateNotes("");
-  //   }
-  // };
+  // Generate a new UUID
+  const id = uuid4();
 
   return (
     <ScrollView>
@@ -149,7 +140,10 @@ export default function Add() {
           </View>
           <TouchableOpacity
             style={styles.submitButton}
-            onPress={() =>
+            onPress={() => {
+              Alert.alert(
+                "New record has been successfully added to your collection!"
+              );
               dispatch(
                 addRecord({
                   image: pic.uri,
@@ -159,9 +153,11 @@ export default function Add() {
                   notes: notes,
                   timesPlayed: 0,
                   lastPlayed: "",
+                  id: id,
+                  isOpen: false,
                 })
-              )
-            }
+              );
+            }}
           >
             <Text style={styles.submitText}>Add to my Collection</Text>
           </TouchableOpacity>

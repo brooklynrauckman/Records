@@ -23,8 +23,8 @@ export default function Dropdown(props) {
   return (
     <View style={styles.dropdown}>
       <TouchableOpacity
-        style={sortSelect === "album" ? styles.dropdownTextContainer : null}
-        onPress={() => updateSortSelect("album")}
+        style={sortSelect === "title" ? styles.dropdownTextContainer : null}
+        onPress={() => updateSortSelect("title")}
       >
         <Text style={styles.dropdownText}>Album</Text>
       </TouchableOpacity>
