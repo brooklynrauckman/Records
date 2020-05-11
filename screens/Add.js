@@ -13,15 +13,10 @@ import { Link } from "react-router-native";
 import { ScrollView } from "react-native-gesture-handler";
 import * as styles from "./styles";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { useSelector } from "react-redux";
-import {
-  useFirestoreConnect,
-  useFirestore,
-  useFirebase,
-} from "react-redux-firebase";
 import Images from "./Images.js";
-import firebase from "firebase";
 import { ternaryRender } from "../lib";
+import { addRecord } from "../redux/app/actions";
+import { useSelector, useDispatch } from "react-redux";
 import { uuidv4 } from "uuid4";
 
 export default function Add() {
@@ -34,82 +29,12 @@ export default function Add() {
   const [toggleCamera, updateToggleCamera] = React.useState(false);
   const [pic, updatePic] = React.useState({});
 
-  /* Firebase Redux */
-  const firestore = useFirestore();
-  const auth = useSelector((state) => state.firebase.auth);
-  useFirestoreConnect([
-    { collection: "records", where: ["userId", "==", auth.uid] },
-  ]);
-
   /* Local Constants */
   const deviceWidth = `${Dimensions.get("window").width / 3}px`;
-
-  const uploadImageToFirebase = async (uri) => {
-    const response = await fetch(uri);
-    const blob = await response.blob();
-    const uploadTask = firebase
-      .storage()
-      .ref()
-      .child(`IMAGE_${new Date().toISOString()}`)
-      .put(blob);
-
-    return new Promise((resolve, reject) => {
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {},
-        (error) => reject("There was an error uploading your image"),
-        () => {
-          uploadTask.snapshot.ref
-            .getDownloadURL()
-            .then((downloadURL) => resolve(downloadURL));
-        }
-      );
-    });
-  };
+  const dispatch = useDispatch();
 
   // Generate a new UUID
   const id = uuid4();
-
-  // Validate a UUID as proper V4 format
-  // uuid4.valid(id);
-
-  const updateFirebaseDoc = async (imageUrl) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        firestore
-          .add("records", {
-            image: imageUrl && imageUrl.length ? imageUrl : "",
-            album: album,
-            artist: artist,
-            tags: tags,
-            notes: notes,
-            timesPlayed: 0,
-            createdAt: firestore.FieldValue.serverTimestamp(),
-            id: id,
-            userId: auth.uid,
-          })
-          .then((res) => {
-            console.log(res.id);
-          });
-        resolve(true);
-      } catch (error) {
-        reject(false);
-      }
-    });
-  };
-
-  const addNewRecord = async () => {
-    const imageUrl = pic.uri ? await uploadImageToFirebase(pic.uri) : "";
-    const saveSuccessful = await updateFirebaseDoc(imageUrl);
-    if (saveSuccessful) {
-      Alert.alert("New record has been successfully added to your collection!");
-      updateTags([]);
-      updatePic({});
-      updateAlbum("");
-      updateArtist("");
-      updateNotes("");
-    }
-  };
 
   return (
     <ScrollView>
@@ -215,7 +140,24 @@ export default function Add() {
           </View>
           <TouchableOpacity
             style={styles.submitButton}
-            onPress={() => addNewRecord()}
+            onPress={() => {
+              Alert.alert(
+                "New record has been successfully added to your collection!"
+              );
+              dispatch(
+                addRecord({
+                  image: pic.uri,
+                  title: album,
+                  artist: artist,
+                  tags: tags,
+                  notes: notes,
+                  timesPlayed: 0,
+                  lastPlayed: "",
+                  id: id,
+                  isOpen: false,
+                })
+              );
+            }}
           >
             <Text style={styles.submitText}>Add to my Collection</Text>
           </TouchableOpacity>

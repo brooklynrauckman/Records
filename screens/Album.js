@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Text,
   View,
@@ -13,75 +13,25 @@ import { ScrollView } from "react-native-gesture-handler";
 import * as styles from "./styles";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Link } from "react-router-native";
-import {
-  useFirestoreConnect,
-  useFirestore,
-  useFirebase,
-} from "react-redux-firebase";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { updateApp } from "../redux/app/actions";
-import "firebase/firestore";
-import * as firebase from "firebase/app";
-import { useCollection } from "react-firebase-hooks/firestore";
+import { updateApp, updateRecord, deleteRecord } from "../redux/app/actions";
 import { ternaryRender } from "../lib";
 
 export default function Album(props) {
   //props
   const { isActiveTwo } = props;
 
-  /* Our Redux */
+  /* Redux */
   const dispatch = useDispatch();
-  const { activeAlbum } = useSelector((state) => ({
-    activeAlbum: state.recordsReducer.activeAlbum,
-  }));
+  const records = useSelector((state) => state);
+  const record = records.records.filter((r) => r.isOpen === true)[0];
 
   //Hooks
-  const [value, onChangeText] = React.useState("Album");
-  const [valueTwo, onChangeTextTwo] = React.useState("Artist");
-  const [valueThree, onChangeTextThree] = React.useState("Notes");
-  const [plays, updatePlays] = React.useState(
-    activeAlbum ? activeAlbum.timesPlayed : 0
-  );
-  const [playDate, updatePlayDate] = React.useState(
-    activeAlbum ? activeAlbum.lastPlayed : ""
-  );
   const history = useHistory();
+  const [shouldDelete, updateShouldDelete] = useState(false);
 
-  /* Firebase Redux */
-  const firestore = useFirestore();
-  const auth = useSelector((state) => state.firebase.auth);
-
-  //Firebase Hook to access user docs
-  const [v] = useCollection(
-    firebase
-      .firestore()
-      .collection("records")
-      .where("id", "==", activeAlbum.id ? activeAlbum.id : "")
-  );
-
-  //Update timesPlayed on click
-  async function updateRecord() {
-    const timesPlayed = plays + 1;
-    v.docs[0].ref.update({
-      timesPlayed: timesPlayed,
-    });
-    updatePlays(timesPlayed);
-  }
-
-  //Update lastPlayed on click
-  async function updateRecordTwo() {
-    const date = new Date();
-    const lastPlayed = date.toISOString();
-
-    v.docs[0].ref.update({
-      lastPlayed: lastPlayed,
-    });
-    updatePlayDate(lastPlayed);
-  }
-
-  //Delete album on click
-  async function deleteRecord() {
+  const remove = () => {
     Alert.alert(
       "Delete Record",
       "Are you sure you want to delete this record?",
@@ -94,139 +44,133 @@ export default function Album(props) {
         {
           text: "OK",
           onPress: () => {
-            v.docs[0].ref.delete();
-            dispatch(updateApp({ activeAlbum: {} }));
-            history.push(isActiveTwo === true ? "/search" : "/");
+            updateShouldDelete(true);
           },
         },
       ],
       { cancelable: false }
     );
-  }
+  };
 
-  //Watch for activeAlbum to sync timesPlayed and lastPlayed values
-  React.useEffect(() => {
-    if (activeAlbum) {
-      updatePlays(activeAlbum.timesPlayed);
-      const date = new Date(activeAlbum.lastPlayed);
-      const day = date.getDate();
-      const months = new Array();
-      months[0] = "January";
-      months[1] = "February";
-      months[2] = "March";
-      months[3] = "April";
-      months[4] = "May";
-      months[5] = "June";
-      months[6] = "July";
-      months[7] = "August";
-      months[8] = "September";
-      months[9] = "October";
-      months[10] = "November";
-      months[11] = "December";
-      const month = months[date.getMonth()];
-      const year = date.getFullYear();
-      const dateConverted = month + " " + day + ", " + year;
-      if (activeAlbum.lastPlayed) {
-        updatePlayDate(dateConverted);
-      }
+  useEffect(() => {
+    if (shouldDelete) {
+      dispatch(deleteRecord(record));
+      history.push(isActiveTwo === true ? "/search" : "/");
     }
-  }, [activeAlbum]);
+  }, [shouldDelete]);
 
-  const convertDate = () => {
+  const printDate = () => {
     const date = new Date();
-    const day = date.getDate();
-    const months = new Array();
-    months[0] = "January";
-    months[1] = "February";
-    months[2] = "March";
-    months[3] = "April";
-    months[4] = "May";
-    months[5] = "June";
-    months[6] = "July";
-    months[7] = "August";
-    months[8] = "September";
-    months[9] = "October";
-    months[10] = "November";
-    months[11] = "December";
-    const month = months[date.getMonth()];
     const year = date.getFullYear();
-    const dateConverted = month + " " + day + ", " + year;
+    const day = date.getDate();
+    var months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    const month = months[date.getMonth()];
 
-    updatePlayDate(dateConverted);
+    return `${month} ${day}, ${year}`;
   };
 
   const deviceWidth = `${Dimensions.get("window").width - 32}px`;
 
   return (
     <ScrollView>
-      <TouchableOpacity
-        style={styles.closeIconContainer}
-        onPress={() => {
-          dispatch(updateApp({ activeAlbum: {} }));
-          history.push(isActiveTwo === true ? "/search" : "/");
-        }}
-      >
-        <View style={styles.closeIconAlbum}>
-          <Icon name="close" size={24} color="black" />
-        </View>
-      </TouchableOpacity>
-      <View style={styles.page}>
-        <View style={styles.albumInfo} key={activeAlbum.id}>
-          <Image
-            style={styles.albumPic(deviceWidth)}
-            source={{ url: activeAlbum.image }}
-          />
-
-          <View style={styles.row}>
-            <Text style={styles.headingTwo}>{activeAlbum.album}</Text>
-            <TouchableOpacity
-              style={styles.buttonContainerTop}
-              onPress={() => {
-                updateRecord();
-                updateRecordTwo();
-                convertDate();
-              }}
-            >
-              <Text style={styles.countButton}>{`x${plays}`}</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.albumInfo}>
-            <Text style={styles.artist}>{activeAlbum.artist}</Text>
-            <View style={styles.tagContainer}>
+      {ternaryRender(
+        record !== undefined,
+        <View>
+          <TouchableOpacity
+            style={styles.closeIconContainer}
+            onPress={() => {
+              dispatch(
+                updateRecord({
+                  ...record,
+                  ...{ isOpen: false },
+                })
+              );
+              history.push(isActiveTwo === true ? "/search" : "/");
+            }}
+          >
+            <View style={styles.closeIconAlbum}>
+              <Icon name="close" size={24} color="black" />
+            </View>
+          </TouchableOpacity>
+          <View style={styles.page}>
+            <View style={styles.albumInfo}>
               {ternaryRender(
-                activeAlbum,
-                activeAlbum.tags.map((tag) => (
-                  <View style={styles.tagButton}>
-                    <Text style={styles.tagText}>{tag}</Text>
-                  </View>
-                )),
-                null
+                record.image,
+                <Image
+                  style={styles.albumPic(deviceWidth)}
+                  source={{ url: record.image }}
+                />,
+                <View style={styles.missingPic(deviceWidth)}></View>
               )}
-            </View>
-            <View>
-              {ternaryRender(
-                playDate,
-                <Text style={styles.lastPlayed}>
-                  Last played &nbsp; <Text style={styles.date}>{playDate}</Text>
-                </Text>,
-                <Text></Text>
-              )}
-              <Text style={styles.notes}>Notes</Text>
-              <Text style={styles.note}>{activeAlbum.notes}</Text>
-            </View>
-            <View style={styles.buttonRight}>
-              <TouchableOpacity
-                style={styles.deleteContainer}
-                onPress={() => {
-                  deleteRecord();
-                }}
-              >
-                <Text style={styles.deleteButton}>Delete</Text>
-              </TouchableOpacity>
+              <View style={styles.row}>
+                <Text style={styles.headingTwo}>{record.title}</Text>
+                <TouchableOpacity
+                  style={styles.buttonContainerTop}
+                  onPress={() => {
+                    dispatch(
+                      updateRecord({
+                        ...record,
+                        ...{ timesPlayed: record.timesPlayed + 1 },
+                        ...{ lastPlayed: printDate() },
+                      })
+                    );
+                  }}
+                >
+                  <Text
+                    style={styles.countButton}
+                  >{`x${record.timesPlayed}`}</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.albumInfo}>
+                <Text style={styles.artist}>{record.artist}</Text>
+                <View style={styles.tagContainer}>
+                  {ternaryRender(
+                    record,
+                    record.tags.map((tag) => (
+                      <View style={styles.tagButton} key={record.id}>
+                        <Text style={styles.tagText}>{tag}</Text>
+                      </View>
+                    )),
+                    null
+                  )}
+                </View>
+                <View>
+                  <Text style={styles.lastPlayed}>
+                    Last played &nbsp;{" "}
+                    <Text style={styles.date}>{record.lastPlayed}</Text>
+                  </Text>
+                  <Text></Text>
+                  <Text style={styles.notes}>Notes</Text>
+                  <Text style={styles.note}>{record.notes}</Text>
+                </View>
+                <View style={styles.buttonRight}>
+                  <TouchableOpacity
+                    style={styles.deleteContainer}
+                    onPress={() => {
+                      remove();
+                    }}
+                  >
+                    <Text style={styles.deleteButton}>Delete</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
           </View>
         </View>
-      </View>
+      )}
     </ScrollView>
   );
 }

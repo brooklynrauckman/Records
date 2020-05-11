@@ -11,14 +11,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import * as styles from "./styles";
 import { ternaryRender } from "../lib";
-import {
-  useFirestoreConnect,
-  useFirestore,
-  useFirebase,
-  isLoaded,
-  isEmpty,
-} from "react-redux-firebase";
-import { updateApp } from "../redux/app/actions";
+import { updateRecord } from "../redux/app/actions";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 
@@ -32,40 +25,24 @@ export default function Search(props) {
 
   const deviceWidth = `${Dimensions.get("window").width / 2 - 20}px`;
 
-  /* Firebase Redux */
-  const firestore = useFirestore();
-  const auth = useSelector((state) => state.firebase.auth);
-
-  useFirestoreConnect([
-    {
-      collection: "records",
-      where: ["userId", "==", auth.uid ? auth.uid : ""],
-    },
-  ]);
-
-  /* Our Redux */
+  /* Redux */
   const dispatch = useDispatch();
-
-  const records = useSelector((state) =>
-    state.firestore.ordered.records ? state.firestore.ordered.records : []
-  );
+  const records = useSelector((state) => state);
 
   React.useEffect(() => {
-    if (records.length) {
-      updateResults(records);
-    }
+    updateResults(records.records);
   }, [records]);
 
   React.useEffect(() => {
-    const filtered = records.filter(
+    const filtered = records.records.filter(
       (record) =>
-        record.album.toLowerCase().includes(search.toLowerCase()) ||
+        record.title.toLowerCase().includes(search.toLowerCase()) ||
         record.artist.toLowerCase().includes(search.toLowerCase()) ||
         !!record.tags.filter((i) =>
           i.toLowerCase().includes(search.toLowerCase())
         ).length
     );
-    if (records.length && search.length) {
+    if (search.length) {
       updateResults(filtered);
     }
   }, [search]);
@@ -89,43 +66,40 @@ export default function Search(props) {
             style={styles.closeIcon}
             onPress={() => {
               updateSearch("");
-              updateResults(records);
+              updateResults(records.records);
             }}
           >
             <Icon name="close" size={24} color="#999" />
           </TouchableOpacity>
         </View>
         <View style={styles.albumResults}>
-          {ternaryRender(
-            !isLoaded(records) || isEmpty(records) || isEmpty(auth),
-            <Text>Loading...</Text>,
-            ternaryRender(
-              !records || isEmpty(records),
-              <Text>No records found</Text>,
-              results.map((record) => (
-                <TouchableOpacity
-                  style={styles.smallPic(deviceWidth)}
-                  key={record.id}
-                  onPress={() => {
-                    dispatch(updateApp({ activeAlbum: record }));
-                    history.push("/album");
-                  }}
-                >
-                  {ternaryRender(
-                    record.image.length,
-                    <Image
-                      style={styles.smallPicImage(deviceWidth)}
-                      source={{ url: record.image }}
-                    ></Image>,
-                    <View style={styles.smallPicText}>
-                      <Text style={styles.smallPicAlbum}>{record.album}</Text>
-                      <Text style={styles.smallPicArtist}>{record.artist}</Text>
-                    </View>
-                  )}
-                </TouchableOpacity>
-              ))
-            )
-          )}
+          {results.map((record) => (
+            <TouchableOpacity
+              key={record.id}
+              style={styles.smallPic(deviceWidth)}
+              onPress={() => {
+                dispatch(
+                  updateRecord({
+                    ...record,
+                    ...{ isOpen: true },
+                  })
+                );
+                history.push("/album");
+              }}
+            >
+              {ternaryRender(
+                record.image,
+                <Image
+                  style={styles.smallPicImage(deviceWidth)}
+                  source={{ uri: record.image }}
+                ></Image>,
+                <View style={styles.smallPicText}>
+                  <Text style={styles.smallPicAlbum}>{record.title}</Text>
+                  <Text style={styles.smallPicArtist}>{record.artist}</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          ))}
         </View>
       </View>
     </ScrollView>

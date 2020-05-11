@@ -7,24 +7,15 @@ import {
   TouchableOpacity,
 } from "react-native";
 import * as styles from "./styles";
-import {
-  useFirestoreConnect,
-  useFirestore,
-  useFirebase,
-} from "react-redux-firebase";
 import { useSelector, useDispatch } from "react-redux";
 import { updateApp } from "../redux/app/actions";
-import "firebase/firestore";
-import * as firebase from "firebase/app";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { ternaryRender } from "../lib";
 
 export default function Dropdown(props) {
   /* Our Redux */
   const dispatch = useDispatch();
-  const records = useSelector((state) =>
-    state.firestore.ordered.records ? state.firestore.ordered.records : []
-  );
+  const records = useSelector((state) => (state.records ? state.records : []));
 
   //props
   const { sortSelect, updateSortSelect } = props;
@@ -32,8 +23,8 @@ export default function Dropdown(props) {
   return (
     <View style={styles.dropdown}>
       <TouchableOpacity
-        style={sortSelect === "album" ? styles.dropdownTextContainer : null}
-        onPress={() => updateSortSelect("album")}
+        style={sortSelect === "title" ? styles.dropdownTextContainer : null}
+        onPress={() => updateSortSelect("title")}
       >
         <Text style={styles.dropdownText}>Album</Text>
       </TouchableOpacity>
